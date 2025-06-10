@@ -12,7 +12,7 @@ const adminState = {
 const pubnub = new PubNub({
     publishKey: 'pub-c-54dd99bb-2b64-496b-9279-4885b113fae6',
     subscribeKey: 'sub-c-3343b2bb-49a7-4c31-895b-cc9c45ab2054',
-    uuid: localStorage.getItem('chat-username') || `User-${Math.random().toString(36).substr(2, 9)}`,
+    uuid: generateDefaultUsername(),
     heartbeatInterval: 30,
     presenceTimeout: 60,
     keepAlive: true,
@@ -41,6 +41,17 @@ const pubnub = new PubNub({
     }
 });
 
+// Function to generate a default username
+function generateDefaultUsername() {
+    const savedUsername = localStorage.getItem('chat-username');
+    if (savedUsername && savedUsername !== 'undefined' && savedUsername !== 'null') {
+        return savedUsername;
+    }
+    const newUsername = `User-${Math.random().toString(36).substr(2, 9)}`;
+    localStorage.setItem('chat-username', newUsername);
+    return newUsername;
+}
+
 // DOM Elements
 const messageInput = document.getElementById('message');
 const usernameInput = document.getElementById('username');
@@ -65,6 +76,7 @@ const state = {
     typingTimeout: null
 };
 
+// Initialize username input with current value
 usernameInput.value = state.currentUsername;
 usernameInput.addEventListener('input', e => localStorage.setItem('chat-username', e.target.value));
 
@@ -632,11 +644,6 @@ themeToggle.addEventListener('change', () => {
 // Initialize admin panel immediately
 createAdminPanel();
 checkAdminStatus();
-
-// Set admin username in localStorage
-localStorage.setItem('chat-username', ADMIN_USERNAME);
-state.currentUsername = ADMIN_USERNAME;
-usernameInput.value = ADMIN_USERNAME;
 
 function getColor(username) {
     let hash = 0;
