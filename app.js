@@ -61,6 +61,118 @@ const themeToggle = document.getElementById('theme-toggle');
 const clearHistoryBtn = document.getElementById('clear-history');
 const html = document.documentElement;
 
+// Create edit button for username
+const usernameContainer = document.createElement('div');
+usernameContainer.className = 'username-container';
+const editButton = document.createElement('button');
+editButton.className = 'edit-username-btn';
+editButton.innerHTML = '✎'; // Pencil icon
+editButton.title = 'Edit username';
+
+// Insert the new elements
+usernameInput.parentNode.insertBefore(usernameContainer, usernameInput);
+usernameContainer.appendChild(usernameInput);
+usernameContainer.appendChild(editButton);
+
+// Lock username input by default
+usernameInput.readOnly = true;
+
+// Edit button click handler
+editButton.addEventListener('click', () => {
+    if (usernameInput.readOnly) {
+        // Enable editing
+        usernameInput.readOnly = false;
+        editButton.innerHTML = '✓'; // Checkmark icon
+        editButton.title = 'Save username';
+        usernameInput.focus();
+        usernameInput.select();
+    } else {
+        // Save changes
+        const newUsername = usernameInput.value.trim();
+        if (!newUsername) {
+            usernameInput.value = state.currentUsername;
+            usernameInput.readOnly = true;
+            editButton.innerHTML = '✎';
+            editButton.title = 'Edit username';
+            return;
+        }
+        
+        if (newUsername === state.currentUsername) {
+            usernameInput.readOnly = true;
+            editButton.innerHTML = '✎';
+            editButton.title = 'Edit username';
+            return;
+        }
+
+        if (confirm('Change your name? This will be visible to all users.')) {
+            const oldName = state.currentUsername;
+            state.currentUsername = newUsername;
+            localStorage.setItem('chat-username', newUsername);
+            
+            // Update PubNub UUID
+            pubnub.setUUID(newUsername);
+            
+            // Check admin status after username change
+            checkAdminStatus();
+            
+            // Update the state and trigger presence refresh
+            updatePresence().then(() => {
+                // Publish name change message
+                const systemMessage = {
+                    type: 'system',
+                    text: `${oldName} changed their name to ${newUsername}`,
+                    time: new Date().toLocaleTimeString(),
+                    id: `name-change-${Date.now()}`
+                };
+                pubnub.publish({
+                    channel: CHANNEL,
+                    message: systemMessage
+                });
+                
+                // Update local users list
+                if (state.users.has(oldName)) {
+                    state.users.delete(oldName);
+                }
+                state.users.set(newUsername, {
+                    name: newUsername,
+                    status: 'online'
+                });
+                updateUsersList();
+                
+                // Force refresh of all users
+                refreshUsersList();
+            });
+        } else {
+            usernameInput.value = state.currentUsername;
+        }
+        
+        usernameInput.readOnly = true;
+        editButton.innerHTML = '✎';
+        editButton.title = 'Edit username';
+    }
+});
+
+// Handle Enter key in username input
+usernameInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        editButton.click(); // Trigger save
+    }
+});
+
+// Handle Escape key to cancel editing
+usernameInput.addEventListener('keyup', (e) => {
+    if (e.key === 'Escape' && !usernameInput.readOnly) {
+        usernameInput.value = state.currentUsername;
+        usernameInput.readOnly = true;
+        editButton.innerHTML = '✎';
+        editButton.title = 'Edit username';
+    }
+});
+
+// Remove the old change event listener since we're handling changes through the edit button now
+usernameInput.removeEventListener('change', () => {});
+
 const CONFIG = {
     connectionStatusDuration: 3000,
 };
@@ -80,56 +192,6 @@ usernameInput.value = state.currentUsername;
 localStorage.removeItem('isAdmin');
 
 usernameInput.addEventListener('input', e => localStorage.setItem('chat-username', e.target.value));
-
-usernameInput.addEventListener('change', () => {
-    const newUsername = usernameInput.value.trim();
-    if (!newUsername || newUsername === state.currentUsername) return;
-
-    if (state.currentUsername && !confirm('Change your name? This will be visible to all users.')) {
-        usernameInput.value = state.currentUsername;
-        return;
-    }
-
-    const oldName = state.currentUsername;
-    state.currentUsername = newUsername;
-    localStorage.setItem('chat-username', newUsername);
-    
-    // Update PubNub UUID
-    pubnub.setUUID(newUsername);
-    
-    // Check admin status after username change
-    checkAdminStatus();
-    
-    // Then update the state and trigger presence refresh
-    updatePresence().then(() => {
-        // Publish name change message
-        if (oldName) {
-            const systemMessage = {
-                type: 'system',
-                text: `${oldName} changed their name to ${newUsername}`,
-                time: new Date().toLocaleTimeString(),
-                id: `name-change-${Date.now()}`
-            };
-            pubnub.publish({
-                channel: CHANNEL,
-                message: systemMessage
-            });
-        }
-        
-        // Update local users list
-        if (state.users.has(oldName)) {
-            state.users.delete(oldName);
-        }
-        state.users.set(newUsername, {
-            name: newUsername,
-            status: 'online'
-        });
-        updateUsersList();
-        
-        // Force refresh of all users
-        refreshUsersList();
-    });
-});
 
 function updatePresence() {
     return new Promise((resolve, reject) => {

@@ -315,14 +315,16 @@ h2 {
 .message.system {
     display: flex;
     justify-content: center;
-    margin: 8px 0;
-    opacity: 0.8;
+    margin: 10px 0;
+    text-align: center;
 }
 
 .message.system .content {
-    background: var(--bg-hover);
-    border-radius: 12px;
+    background-color: rgba(128, 128, 128, 0.1);
+    border-radius: 15px;
     padding: 8px 16px;
+    font-style: italic;
+    display: flex;
     max-width: 80%;
     text-align: center;
 }
@@ -1078,4 +1080,57 @@ button:disabled {
     transform: scale(1.1);
     background: var(--bg-hover);
     border-color: var(--highlight);
+}
+
+.username-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.username-container input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.username-container input:read-only {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+[data-theme="dark"] .username-container input:read-only {
+    background-color: #2a2a2a;
+}
+
+.edit-username-btn {
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.edit-username-btn:hover {
+    background-color: #e0e0e0;
+    transform: scale(1.05);
+}
+
+[data-theme="dark"] .edit-username-btn {
+    background-color: #2a2a2a;
+    color: #fff;
+}
+
+[data-theme="dark"] .edit-username-btn:hover {
+    background-color: #3a3a3a;
 } 
