@@ -776,16 +776,21 @@ button:disabled {
     font-size: 1rem;
 }
 
-/* Mobile Responsive Design */
+/* Mobile Styles */
 @media screen and (max-width: 768px) {
     body {
         padding: 0;
+        height: 100%;
+        position: fixed;
+        width: 100%;
+        overflow: hidden;
     }
 
     .app-container {
         width: 100%;
-        height: 100vh;
+        height: 100%;
         gap: 0;
+        position: relative;
     }
 
     .users-panel, .admin-panel {
@@ -795,66 +800,69 @@ button:disabled {
     .chat-container {
         border-radius: 0;
         border: none;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .messages {
+        flex: 1;
+        padding: 16px;
+        padding-bottom: 180px; /* Increased space for input group */
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .input-group {
-        padding: 12px;
-        border-radius: 0;
-        flex-wrap: wrap;
-        gap: 8px;
-        background: var(--bg-panel);
-        border-top: 1px solid var(--border-color);
         position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
-        z-index: 100;
+        padding: 12px;
+        background: var(--bg-panel);
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        z-index: 1000;
+        max-height: 160px;
     }
 
     #username {
         width: 100%;
-        order: -1;
+        height: 40px;
+        font-size: 16px;
+        padding: 8px 12px;
+        margin-bottom: 4px;
     }
 
     #message {
-        flex: 1;
-        min-width: 0;
+        width: 100%;
+        height: 40px;
+        font-size: 16px;
+        padding: 8px 12px;
     }
 
     #send-button {
-        padding: 12px 20px;
-    }
-
-    .messages {
-        padding-bottom: 140px; /* Space for fixed input group */
-    }
-
-    .message {
-        max-width: 85%;
-    }
-
-    .message .content {
-        padding: 10px 14px;
+        height: 40px;
+        padding: 8px 16px;
+        margin-top: 4px;
+        font-size: 16px;
     }
 
     /* Ensure inputs are visible and properly sized */
     input[type="text"] {
-        font-size: 16px; /* Prevent zoom on iOS */
-        padding: 10px 14px;
-        margin: 0;
-        border-radius: 16px;
-    }
-
-    /* Adjust connection status for mobile */
-    .connection-status {
-        margin: 4px auto;
-        font-size: 0.8rem;
+        -webkit-appearance: none;
+        border-radius: 12px;
+        background: var(--input-bg);
+        color: var(--text-main);
+        border: 1px solid var(--border-color);
     }
 
     /* Adjust typing status for mobile */
     #typing-status {
         position: fixed;
-        bottom: 120px;
+        bottom: 170px;
         left: 0;
         right: 0;
         text-align: center;
@@ -862,6 +870,20 @@ button:disabled {
         font-size: 0.8rem;
         color: var(--text-secondary);
         background: var(--bg-panel);
+        z-index: 999;
+    }
+
+    /* Fix viewport height issues on iOS */
+    @supports (-webkit-touch-callout: none) {
+        body {
+            height: -webkit-fill-available;
+        }
+        .app-container {
+            height: -webkit-fill-available;
+        }
+        .chat-container {
+            height: -webkit-fill-available;
+        }
     }
 }
 
