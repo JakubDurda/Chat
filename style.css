@@ -775,3 +775,99 @@ button:disabled {
     margin-right: 8px;
     font-size: 1rem;
 }
+
+/* Mobile Responsive Design */
+@media screen and (max-width: 768px) {
+    body {
+        padding: 0;
+    }
+
+    .app-container {
+        flex-direction: column;
+        height: 100vh;
+        width: 100%;
+        gap: 0;
+        padding: 0;
+    }
+
+    /* Hide users panel by default on mobile */
+    .users-panel {
+        display: none;
+    }
+
+    /* Hide admin panel by default on mobile */
+    .admin-panel {
+        display: none;
+    }
+
+    /* Make chat container take full space */
+    .chat-container {
+        flex: 1;
+        border-radius: 0;
+        border: none;
+    }
+
+    .chat-header {
+        height: 50px;
+        padding: 0 16px;
+    }
+
+    .messages {
+        padding: 10px;
+        flex: 1;
+    }
+
+    .message {
+        max-width: 85%;
+    }
+
+    .message .content {
+        padding: 8px 12px;
+    }
+
+    .input-group {
+        padding: 10px;
+        gap: 8px;
+        border-radius: 0;
+    }
+
+    #username {
+        width: 100px;
+    }
+
+    #message {
+        flex: 1;
+    }
+
+    button {
+        padding: 8px 16px;
+        white-space: nowrap;
+    }
+
+    /* Improve touch targets */
+    .message .delete-message {
+        padding: 8px;
+        font-size: 16px;
+    }
+
+    /* Add overscroll behavior */
+    .messages {
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* Small phones */
+@media screen and (max-width: 380px) {
+    .input-group {
+        padding: 8px;
+    }
+
+    #username {
+        width: 80px;
+    }
+
+    button {
+        padding: 8px 12px;
+    }
+}
