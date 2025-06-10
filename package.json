@@ -8,6 +8,10 @@
     "test:watch": "jest --watch --env=jsdom",
     "generate-docs": "markdown-pdf documentation.md -o documentation.pdf"
   },
+  "jest": {
+    "setupFilesAfterEnv": ["./jest.setup.js"],
+    "testEnvironment": "jsdom"
+  },
   "devDependencies": {
     "@babel/preset-env": "^7.23.9",
     "@testing-library/dom": "^9.3.4",

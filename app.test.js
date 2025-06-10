@@ -1,5 +1,4 @@
-import { describe, expect, test } from '@jest/globals';
-import { getColor } from './app';
+const { getColor } = require('./app');
 
 describe('getColor', () => {
   test('returns consistent color for a username', () => {

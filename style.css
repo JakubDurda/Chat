@@ -232,14 +232,14 @@ body {
     background: var(--message-own);
     color: white;
     border-bottom-right-radius: 4px;
-    margin-right: 60px;
+    margin-right: 60px; /* Space for delete button */
 }
 
 .message.other .content {
     background: var(--message-other);
     color: var(--text-main);
     border-bottom-left-radius: 4px;
-    margin-left: 60px;
+    margin-left: 60px; /* Space for delete button */
 }
 
 .message .username {
@@ -274,9 +274,9 @@ body {
     background: rgba(229, 62, 62, 0.1);
     border: 1px solid rgba(229, 62, 62, 0.3);
     color: #e53e3e;
-    padding: 8px 12px;
+    padding: 6px 10px;
     border-radius: 12px;
-    font-size: 16px;
+    font-size: 14px;
     cursor: pointer;
     opacity: 0;
     transition: all 0.2s ease;
@@ -287,11 +287,11 @@ body {
 }
 
 .message.own .delete-message {
-    right: -50px;
+    right: -40px;
 }
 
 .message.other .delete-message {
-    left: -50px;
+    left: -40px;
 }
 
 .message:hover .delete-message {
@@ -640,6 +640,15 @@ body.admin .admin-panel {
 
 .theme-toggle input:checked + .slider:before {
     transform: translateX(16px);
+}
+
+/* Message spacing for delete buttons */
+.message.own .content {
+    margin-right: 40px;
+}
+
+.message.other .content {
+    margin-left: 40px;
 }
 
 /* Scrollbar styling */
