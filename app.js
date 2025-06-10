@@ -12,7 +12,7 @@ const adminState = {
 const pubnub = new PubNub({
     publishKey: 'pub-c-54dd99bb-2b64-496b-9279-4885b113fae6',
     subscribeKey: 'sub-c-3343b2bb-49a7-4c31-895b-cc9c45ab2054',
-    uuid: generateDefaultUsername(),
+    uuid: state.currentUsername, // Use the already generated username
     heartbeatInterval: 30,
     presenceTimeout: 60,
     keepAlive: true,
@@ -43,11 +43,8 @@ const pubnub = new PubNub({
 
 // Function to generate a default username
 function generateDefaultUsername() {
-    const savedUsername = localStorage.getItem('chat-username');
-    if (savedUsername && savedUsername !== 'undefined' && savedUsername !== 'null') {
-        return savedUsername;
-    }
-    const newUsername = `User-${Math.random().toString(36).substr(2, 9)}`;
+    // Always generate a new random username for new sessions
+    const newUsername = `User-${Math.random().toString(36).substr(2, 6)}`;
     localStorage.setItem('chat-username', newUsername);
     return newUsername;
 }
@@ -71,13 +68,17 @@ const CONFIG = {
 const state = {
     messageIds: new Set(),
     users: new Map(),
-    currentUsername: pubnub.getUUID(),
+    currentUsername: generateDefaultUsername(), // Generate new username on page load
     typingUsers: new Set(),
     typingTimeout: null
 };
 
 // Initialize username input with current value
 usernameInput.value = state.currentUsername;
+
+// Clear any existing admin state
+localStorage.removeItem('isAdmin');
+
 usernameInput.addEventListener('input', e => localStorage.setItem('chat-username', e.target.value));
 
 usernameInput.addEventListener('change', () => {
