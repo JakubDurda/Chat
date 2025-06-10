@@ -783,38 +783,50 @@ button:disabled {
     }
 
     .app-container {
-        flex-direction: column;
-        height: 100vh;
         width: 100%;
+        height: 100vh;
         gap: 0;
-        padding: 0;
     }
 
-    /* Hide users panel by default on mobile */
-    .users-panel {
+    .users-panel, .admin-panel {
         display: none;
     }
 
-    /* Hide admin panel by default on mobile */
-    .admin-panel {
-        display: none;
-    }
-
-    /* Make chat container take full space */
     .chat-container {
-        flex: 1;
         border-radius: 0;
         border: none;
     }
 
-    .chat-header {
-        height: 50px;
-        padding: 0 16px;
+    .input-group {
+        padding: 12px;
+        border-radius: 0;
+        flex-wrap: wrap;
+        gap: 8px;
+        background: var(--bg-panel);
+        border-top: 1px solid var(--border-color);
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+    }
+
+    #username {
+        width: 100%;
+        order: -1;
+    }
+
+    #message {
+        flex: 1;
+        min-width: 0;
+    }
+
+    #send-button {
+        padding: 12px 20px;
     }
 
     .messages {
-        padding: 10px;
-        flex: 1;
+        padding-bottom: 140px; /* Space for fixed input group */
     }
 
     .message {
@@ -822,38 +834,34 @@ button:disabled {
     }
 
     .message .content {
-        padding: 8px 12px;
+        padding: 10px 14px;
     }
 
-    .input-group {
-        padding: 10px;
-        gap: 8px;
-        border-radius: 0;
+    /* Ensure inputs are visible and properly sized */
+    input[type="text"] {
+        font-size: 16px; /* Prevent zoom on iOS */
+        padding: 10px 14px;
+        margin: 0;
+        border-radius: 16px;
     }
 
-    #username {
-        width: 100px;
+    /* Adjust connection status for mobile */
+    .connection-status {
+        margin: 4px auto;
+        font-size: 0.8rem;
     }
 
-    #message {
-        flex: 1;
-    }
-
-    button {
-        padding: 8px 16px;
-        white-space: nowrap;
-    }
-
-    /* Improve touch targets */
-    .message .delete-message {
-        padding: 8px;
-        font-size: 16px;
-    }
-
-    /* Add overscroll behavior */
-    .messages {
-        overscroll-behavior: contain;
-        -webkit-overflow-scrolling: touch;
+    /* Adjust typing status for mobile */
+    #typing-status {
+        position: fixed;
+        bottom: 120px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        padding: 4px;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        background: var(--bg-panel);
     }
 }
 
