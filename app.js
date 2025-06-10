@@ -586,21 +586,19 @@ function publishTypingStatus(isTyping) {
 
 // Theme logic
 function applyTheme(theme) {
-    // Add transition class
-    document.documentElement.classList.add('theme-transition');
-    
-    // Force a reflow
-    document.documentElement.offsetHeight;
-    
-    // Apply theme
+    // Set theme
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('chat-theme', theme);
-    themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
     
-    // Remove transition class after transition completes
-    setTimeout(() => {
-        document.documentElement.classList.remove('theme-transition');
-    }, 300);
+    // Add transition class for smooth change
+    requestAnimationFrame(() => {
+        document.documentElement.classList.add('theme-transition');
+        
+        // Remove transition class after animation
+        setTimeout(() => {
+            document.documentElement.classList.remove('theme-transition');
+        }, 300);
+    });
 }
 
 // Toggle theme

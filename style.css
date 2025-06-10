@@ -1,3 +1,9 @@
+/* Initial neutral styles */
+html {
+    background-color: #1a1a1a; /* Dark theme default */
+    color: white;
+}
+
 /* Dark & Light Theme Setup */
 :root {
     --bg-main: #1a1a1a;
@@ -45,15 +51,17 @@
     --status-success: #00c853;
     --status-error: #d32f2f;
     --calendar-invert: 0; /* For light theme */
+    background-color: white;
+    color: black;
 }
 
-/* Theme transition */
-html.theme-transition {
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
+/* Theme transition - only when class is present */
+html.theme-transition,
 html.theme-transition * {
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    transition: background-color 0.3s ease, 
+                color 0.3s ease, 
+                border-color 0.3s ease, 
+                box-shadow 0.3s ease !important;
 }
 
 /* Global Reset */
@@ -76,7 +84,6 @@ html, body {
 
 /* Prevent FOUC (Flash of Unstyled Content) */
 html.theme-transition,
-html.theme-transition *,
 html.theme-transition *:before,
 html.theme-transition *:after {
     transition: all 0s !important;
