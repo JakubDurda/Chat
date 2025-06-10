@@ -586,14 +586,22 @@ function publishTypingStatus(isTyping) {
 
 // Theme logic
 function applyTheme(theme) {
+    // Add transition class
+    document.documentElement.classList.add('theme-transition');
+    
+    // Force a reflow
+    document.documentElement.offsetHeight;
+    
+    // Apply theme
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('chat-theme', theme);
     themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+    
+    // Remove transition class after transition completes
+    setTimeout(() => {
+        document.documentElement.classList.remove('theme-transition');
+    }, 300);
 }
-
-// Initial theme
-const savedTheme = localStorage.getItem('chat-theme') || 'dark';
-applyTheme(savedTheme);
 
 // Toggle theme
 themeToggle.addEventListener('click', () => {
@@ -601,21 +609,32 @@ themeToggle.addEventListener('click', () => {
     applyTheme(current === 'dark' ? 'light' : 'dark');
 });
 
-// Event listeners
+// Message input handling
 messageInput.addEventListener('keypress', e => {
     if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
+        e.preventDefault(); // Prevent form submission
         sendMessage();
     }
 });
 
+// Typing indicator
 messageInput.addEventListener('input', () => {
     clearTimeout(state.typingTimeout);
     publishTypingStatus(true);
     state.typingTimeout = setTimeout(() => publishTypingStatus(false), 1500);
 });
 
-sendButton.addEventListener('click', sendMessage);
+// Form submission handling
+document.getElementById('message-form').addEventListener('submit', (e) => {
+    e.preventDefault(); // Prevent form submission
+    return false;
+});
+
+// Send button click handler
+sendButton.addEventListener('click', (e) => {
+    e.preventDefault(); // Prevent any default behavior
+    sendMessage();
+});
 
 // Init
 initPubNub();

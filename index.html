@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PubNub Chat</title>
+    <script>
+        const theme = localStorage.getItem('chat-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+    </script>
     <link rel="stylesheet" href="style.css" />
     <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
 </head>
@@ -24,11 +28,11 @@
             <div id="connection-status" class="connection-status">Connecting...</div>
             <div id="messages" class="messages"></div>
             <div id="typing-status" class="typing-status"></div>
-            <div class="input-group">
+            <form id="message-form" class="input-group" onsubmit="return false;">
                 <input type="text" id="username" placeholder="Your name..." autocomplete="off" />
                 <input type="text" id="message" placeholder="Type a message..." autocomplete="off" />
-                <button id="send-button">Send</button>
-            </div>
+                <button type="button" id="send-button">Send</button>
+            </form>
         </div>
         <div id="admin-panel" class="admin-panel">
             <h3>Admin Controls</h3>
