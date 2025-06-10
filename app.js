@@ -8,11 +8,28 @@ const adminState = {
     isAdmin: false
 };
 
-// PubNub setup
+// Function to generate a default username
+function generateDefaultUsername() {
+    // Always generate a new random username for new sessions
+    const newUsername = `User-${Math.random().toString(36).substr(2, 6)}`;
+    localStorage.setItem('chat-username', newUsername);
+    return newUsername;
+}
+
+// Initialize state first
+const state = {
+    messageIds: new Set(),
+    users: new Map(),
+    currentUsername: generateDefaultUsername(), // Generate new username on page load
+    typingUsers: new Set(),
+    typingTimeout: null
+};
+
+// PubNub setup with the initialized state
 const pubnub = new PubNub({
     publishKey: 'pub-c-54dd99bb-2b64-496b-9279-4885b113fae6',
     subscribeKey: 'sub-c-3343b2bb-49a7-4c31-895b-cc9c45ab2054',
-    uuid: state.currentUsername, // Use the already generated username
+    uuid: state.currentUsername, // Now state is defined
     heartbeatInterval: 30,
     presenceTimeout: 60,
     keepAlive: true,
@@ -41,14 +58,6 @@ const pubnub = new PubNub({
     }
 });
 
-// Function to generate a default username
-function generateDefaultUsername() {
-    // Always generate a new random username for new sessions
-    const newUsername = `User-${Math.random().toString(36).substr(2, 6)}`;
-    localStorage.setItem('chat-username', newUsername);
-    return newUsername;
-}
-
 // DOM Elements
 const messageInput = document.getElementById('message');
 const usernameInput = document.getElementById('username');
@@ -61,18 +70,14 @@ const themeToggle = document.getElementById('theme-toggle');
 const clearHistoryBtn = document.getElementById('clear-history');
 const html = document.documentElement;
 
-// Create edit button for username
-const usernameContainer = document.createElement('div');
-usernameContainer.className = 'username-container';
-const editButton = document.createElement('button');
-editButton.className = 'edit-username-btn';
-editButton.innerHTML = '✎'; // Pencil icon
-editButton.title = 'Edit username';
+// Initialize username input with current value
+usernameInput.value = state.currentUsername;
 
-// Insert the new elements
-usernameInput.parentNode.insertBefore(usernameContainer, usernameInput);
-usernameContainer.appendChild(usernameInput);
-usernameContainer.appendChild(editButton);
+// Clear any existing admin state
+localStorage.removeItem('isAdmin');
+
+// Get the edit button from HTML
+const editButton = document.querySelector('.edit-username-btn');
 
 // Lock username input by default
 usernameInput.readOnly = true;
@@ -82,7 +87,7 @@ editButton.addEventListener('click', () => {
     if (usernameInput.readOnly) {
         // Enable editing
         usernameInput.readOnly = false;
-        editButton.innerHTML = '✓'; // Checkmark icon
+        editButton.innerHTML = '✓';
         editButton.title = 'Save username';
         usernameInput.focus();
         usernameInput.select();
@@ -121,8 +126,9 @@ editButton.addEventListener('click', () => {
                 const systemMessage = {
                     type: 'system',
                     text: `${oldName} changed their name to ${newUsername}`,
-                    time: new Date().toLocaleTimeString(),
-                    id: `name-change-${Date.now()}`
+                    time: new Date().toISOString(),
+                    id: `name-change-${Date.now()}`,
+                    user: 'System'
                 };
                 pubnub.publish({
                     channel: CHANNEL,
@@ -156,7 +162,7 @@ editButton.addEventListener('click', () => {
 usernameInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         e.preventDefault();
-        editButton.click(); // Trigger save
+        editButton.click();
     }
 });
 
@@ -170,26 +176,9 @@ usernameInput.addEventListener('keyup', (e) => {
     }
 });
 
-// Remove the old change event listener since we're handling changes through the edit button now
-usernameInput.removeEventListener('change', () => {});
-
 const CONFIG = {
     connectionStatusDuration: 3000,
 };
-
-const state = {
-    messageIds: new Set(),
-    users: new Map(),
-    currentUsername: generateDefaultUsername(), // Generate new username on page load
-    typingUsers: new Set(),
-    typingTimeout: null
-};
-
-// Initialize username input with current value
-usernameInput.value = state.currentUsername;
-
-// Clear any existing admin state
-localStorage.removeItem('isAdmin');
 
 usernameInput.addEventListener('input', e => localStorage.setItem('chat-username', e.target.value));
 
@@ -523,25 +512,31 @@ function handleNewMessage(messageData, isHistory = false) {
         return;
     }
 
-    // Skip validation for system messages
-    if (messageData.type !== 'system') {
-        // Validate required message data
-        if (!messageData.text || !messageData.user || !messageData.time) {
-            console.log('Skipping invalid message data:', messageData);
-            return;
+    // Format timestamp if it's in ISO format
+    let displayTime;
+    if (messageData.time) {
+        try {
+            if (messageData.time.includes('T')) {
+                // If ISO timestamp, format it nicely
+                const date = new Date(messageData.time);
+                displayTime = date.toLocaleTimeString();
+            } else {
+                // If already formatted, use as is
+                displayTime = messageData.time;
+            }
+        } catch (e) {
+            displayTime = new Date().toLocaleTimeString();
         }
+    } else {
+        displayTime = new Date().toLocaleTimeString();
     }
 
-    if (messageData.id && state.messageIds.has(messageData.id)) {
-        console.log('Skipping duplicate message:', messageData.id);
-        return; // Skip duplicate messages
-    }
-
+    const sender = messageData.user || 'System';
+    const isOwnMessage = sender === state.currentUsername;
+    
     const messageElement = document.createElement('div');
-    const isOwnMessage = messageData.user === state.currentUsername;
     messageElement.className = `message ${isOwnMessage ? 'own' : 'other'} ${messageData.type === 'system' ? 'system' : ''}`;
     
-    // Add message ID and timetoken as data attributes
     if (messageData.id) {
         messageElement.setAttribute('data-message-id', messageData.id);
     }
@@ -560,14 +555,14 @@ function handleNewMessage(messageData, isHistory = false) {
 
         const timeDiv = document.createElement('div');
         timeDiv.className = 'time';
-        timeDiv.textContent = messageData.time;
+        timeDiv.textContent = displayTime;
         contentDiv.appendChild(timeDiv);
     } else {
         if (!isOwnMessage) {
             const usernameDiv = document.createElement('div');
             usernameDiv.className = 'username';
-            usernameDiv.textContent = messageData.user;
-            usernameDiv.style.color = getColor(messageData.user);
+            usernameDiv.textContent = sender;
+            usernameDiv.style.color = getColor(sender);
             contentDiv.appendChild(usernameDiv);
         }
 
@@ -584,7 +579,7 @@ function handleNewMessage(messageData, isHistory = false) {
 
         const timeDiv = document.createElement('div');
         timeDiv.className = 'time';
-        timeDiv.textContent = messageData.time;
+        timeDiv.textContent = displayTime;
         contentDiv.appendChild(timeDiv);
     }
 
@@ -603,7 +598,7 @@ function handleNewMessage(messageData, isHistory = false) {
     // Scroll to bottom if we're already near the bottom
     const isNearBottom = messagesContainer.scrollHeight - messagesContainer.scrollTop - messagesContainer.clientHeight < 100;
     if (isNearBottom) {
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        scrollToBottom();
     }
 }
 
@@ -728,16 +723,19 @@ function addSystemMessage(text) {
     
     const contentDiv = document.createElement('div');
     contentDiv.className = 'content';
-    contentDiv.textContent = text;
     
+    const textSpan = document.createElement('span');
+    textSpan.textContent = text;
+    
+    const timeSpan = document.createElement('span');
+    timeSpan.className = 'time';
+    timeSpan.textContent = new Date().toLocaleTimeString();
+    
+    contentDiv.appendChild(textSpan);
+    contentDiv.appendChild(timeSpan);
     messageDiv.appendChild(contentDiv);
+    
     messagesContainer.appendChild(messageDiv);
-    
-    // Remove the message after animation completes (2.5s = 2s delay + 0.5s fade)
-    setTimeout(() => {
-        messageDiv.remove();
-    }, 2500);
-    
     scrollToBottom();
 }
 
@@ -902,4 +900,52 @@ async function clearChatHistory() {
             handleNewMessage(errorMessage);
         }
     }
+}
+
+// Update the system message publishing
+function publishSystemMessage(text) {
+    const messageId = `system-${Date.now()}`;
+    pubnub.publish({
+        channel: CHANNEL,
+        message: {
+            type: 'system',
+            text: text,
+            time: new Date().toISOString(),
+            id: messageId,
+            user: 'System'
+        }
+    });
+}
+
+function downloadChatLogs() {
+    const messages = Array.from(messagesContainer.children).map(msg => {
+        const timeElement = msg.querySelector('.time');
+        const textElement = msg.querySelector('.text');
+        const usernameElement = msg.querySelector('.username');
+        const isSystem = msg.classList.contains('system');
+        
+        const time = timeElement ? timeElement.textContent : '';
+        const text = textElement ? textElement.textContent.trim() : '';
+        const username = usernameElement ? usernameElement.textContent : '';
+        
+        const timestamp = new Date().toISOString();
+        
+        if (isSystem) {
+            // Remove any "undefined:" prefix from system messages
+            const cleanText = text.replace(/^undefined:\s*/, '').replace(/\s*undefined\?$/, '');
+            return `[${timestamp}] ${cleanText}`;
+        } else {
+            return `[${timestamp}] ${username || 'Anonymous'}: ${text}`;
+        }
+    }).join('\n');
+
+    const blob = new Blob([messages], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `chat-logs-${new Date().toISOString().split('T')[0]}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
