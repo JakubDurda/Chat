@@ -1,48 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>
-        // Set theme before loading anything else
-        const theme = localStorage.getItem('chat-theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', theme);
-    </script>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PubNub Chat</title>
-    <link rel="stylesheet" href="style.css" />
-    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Chat App</title>
+    <link rel="stylesheet" href="app.css">
+    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.4.5.min.js"></script>
 </head>
 <body>
     <div class="app-container">
+        <!-- Left Sidebar - Users List -->
         <div class="users-panel">
             <h3>Online Users</h3>
-            <div id="users-list"></div>
+            <div class="users-list" id="users-list"></div>
         </div>
+
+        <!-- Main Chat Area -->
         <div class="chat-container">
             <div class="chat-header">
-                <h2>💬 Chat Room</h2>
-                <label class="theme-toggle">
-                    <input type="checkbox" id="theme-toggle">
-                    <span class="slider"></span>
-                </label>
+                <h2>Chat</h2>
+                <div class="chat-controls">
+                    <label class="theme-toggle">
+                        <input type="checkbox" id="theme-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                    <input type="text" id="username" placeholder="Your name">
+                </div>
             </div>
-            <div id="connection-status" class="connection-status">Connecting...</div>
-            <div id="messages" class="messages"></div>
-            <div id="typing-status" class="typing-status"></div>
-            <form id="message-form" class="input-group" onsubmit="return false;">
-                <input type="text" id="username" placeholder="Your name..." autocomplete="off" />
-                <input type="text" id="message" placeholder="Type a message..." autocomplete="off" />
+            
+            <div id="connection-status" class="connection-status"></div>
+
+            <div class="messages" id="messages"></div>
+            <div class="typing-status" id="typing-status"></div>
+
+            <div class="input-group">
+                <input type="text" id="message" placeholder="Type your message...">
                 <button type="button" id="send-button">Send</button>
-            </form>
-        </div>
-        <div id="admin-panel" class="admin-panel">
-            <h3>Admin Controls</h3>
-            <div class="admin-controls">
-                <button class="admin-btn danger" id="clear-history">🗑️ Clear Chat History</button>
-                <button class="admin-btn" id="export-chat">📥 Export Chat</button>
             </div>
         </div>
     </div>
+
     <script src="app.js"></script>
 </body>
 </html>

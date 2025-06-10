@@ -14,13 +14,13 @@ A modern, real-time chat application built with PubNub, featuring a responsive d
 
 ## 🚀 Live Demo
 
-Visit [https://your-username.github.io/pubnub-chat](https://your-username.github.io/pubnub-chat) to try the application.
+Visit [https://JakubDurda.github.io/pubnub-chat](https://JakubDurda.github.io/pubnub-chat) to try the application.
 
 ## 🛠️ Quick Start
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/pubnub-chat.git
+   git clone https://github.com/JakubDurda/pubnub-chat.git
    cd pubnub-chat
    ```
 

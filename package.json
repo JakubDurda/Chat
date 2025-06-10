@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Real-time chat application using PubNub REST API",
   "main": "app.js",
+  "author": "JakubDurda",
   "scripts": {
     "test": "jest --env=jsdom",
     "test:watch": "jest --watch --env=jsdom",
