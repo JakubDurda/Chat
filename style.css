@@ -1,0 +1,777 @@
+/* Dark & Light Theme Setup */
+:root {
+    --bg-main: #1a1a1a;
+    --bg-container: #2a2a2a;
+    --bg-panel: #2a2a2a;
+    --bg-hover: #333333;
+    --text-main: #ffffff;
+    --text-secondary: #888888;
+    --highlight: #2b88ff;
+    --border-color: #383838;
+    --message-own: #2b88ff;
+    --message-other: #3a3a3a;
+    --system-msg: #333333;
+    --typing-text: #65676b;
+    --button-bg: #2b88ff;
+    --button-hover: #2574db;
+    --input-bg: #3a3a3a;
+    --input-focus: #404040;
+    --scroll-thumb: #404040;
+    --scroll-thumb-hover: #4a4a4a;
+    --status-success: #00e676;
+    --status-error: #ff5252;
+    --calendar-invert: 1; /* For dark theme */
+}
+
+[data-theme='light'] {
+    --bg-main: #f5f5f5;
+    --bg-container: #ffffff;
+    --bg-panel: #ffffff;
+    --bg-hover: #f0f0f0;
+    --text-main: #1a1a1a;
+    --text-secondary: #555555;
+    --highlight: #2b88ff;
+    --border-color: #dcdcdc;
+    --message-own: #2b88ff;
+    --message-other: #eaeaea;
+    --system-msg: #e0e0e0;
+    --typing-text: #65676b;
+    --button-bg: #2b88ff;
+    --button-hover: #2574db;
+    --input-bg: #f0f0f0;
+    --input-focus: #e0e0e0;
+    --scroll-thumb: #c0c0c0;
+    --scroll-thumb-hover: #a0a0a0;
+    --status-success: #00c853;
+    --status-error: #d32f2f;
+    --calendar-invert: 0; /* For light theme */
+}
+
+/* Global Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+html, body {
+    background: var(--bg-main);
+    color: var(--text-main);
+    height: 100vh;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-main);
+    padding: 16px;
+}
+
+.app-container {
+    display: flex;
+    gap: 16px;
+    height: calc(100vh - 32px);
+    width: calc(100% - 32px);
+    max-width: none;
+    background: transparent;
+    overflow: hidden;
+}
+
+.users-panel {
+    width: 320px;
+    background: var(--bg-panel);
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.users-panel h3 {
+    padding: 0 20px;
+    font-size: 1.25rem;
+    color: var(--text-main);
+    font-weight: 500;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    position: relative;
+    border-bottom: none;
+}
+
+.users-panel h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    right: 20px;
+    height: 1px;
+    background: var(--border-color);
+}
+
+.users-list {
+    padding: 8px;
+    overflow-y: auto;
+    max-height: 300px;
+}
+
+.user-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 20px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.user-item:hover {
+    background: var(--bg-hover);
+}
+
+.user-item .status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--highlight);
+}
+
+.user-item .name {
+    color: var(--text-main);
+    font-size: 0.95rem;
+    font-weight: 400;
+}
+
+.chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-panel);
+    border-radius: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    min-width: 0;
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.connection-status {
+    padding: 8px 16px;
+    text-align: center;
+    font-size: 0.9rem;
+    background: var(--bg-panel);
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+    margin: 8px auto;
+    border-radius: 12px;
+    max-width: 200px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    border: 1px solid transparent;
+}
+
+.connection-status.visible {
+    opacity: 1;
+    height: auto;
+    padding: 8px 16px;
+}
+
+.connection-status.connected {
+    color: var(--status-success);
+    border: 1px solid var(--status-success);
+}
+
+.connection-status.error {
+    color: var(--status-error);
+    border: 1px solid var(--status-error);
+}
+
+.messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.message {
+    position: relative;
+    display: flex;
+    margin-bottom: 16px;
+    max-width: 70%;
+    animation: fadeInUp 0.3s ease-out;
+    align-items: center;
+}
+
+.message.own {
+    margin-left: auto;
+    flex-direction: row-reverse;
+}
+
+.message.other {
+    margin-right: auto;
+}
+
+.message .content {
+    padding: 12px 16px;
+    border-radius: 18px;
+    word-wrap: break-word;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.message.own .content {
+    background: var(--message-own);
+    color: white;
+    border-bottom-right-radius: 4px;
+    margin-right: 60px; /* Space for delete button */
+}
+
+.message.other .content {
+    background: var(--message-other);
+    color: var(--text-main);
+    border-bottom-left-radius: 4px;
+    margin-left: 60px; /* Space for delete button */
+}
+
+.message .username {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.message .text {
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.message .time {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    white-space: nowrap;
+    margin: 0 12px;
+}
+
+.message:hover .time {
+    opacity: 0.7;
+}
+
+/* Delete button styling */
+.message .delete-message {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%) scale(0.8);
+    background: rgba(229, 62, 62, 0.1);
+    border: 1px solid rgba(229, 62, 62, 0.3);
+    color: #e53e3e;
+    padding: 6px 10px;
+    border-radius: 12px;
+    font-size: 14px;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+    font-weight: 500;
+    white-space: nowrap;
+    z-index: 1;
+}
+
+.message.own .delete-message {
+    right: -40px;
+}
+
+.message.other .delete-message {
+    left: -40px;
+}
+
+.message:hover .delete-message {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+}
+
+.message .delete-message:hover {
+    background-color: #e53e3e;
+    border-color: #e53e3e;
+    color: white;
+    box-shadow: 0 2px 8px rgba(229, 62, 62, 0.3);
+    transform: translateY(-50%) scale(1.05);
+}
+
+.message .delete-message:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+/* System messages */
+.message.system {
+    max-width: none;
+    margin: 16px 0;
+    justify-content: center;
+}
+
+.message.system .content {
+    background: var(--system-msg);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    padding: 8px 16px;
+    margin: 0;
+    border-radius: 12px;
+    box-shadow: none;
+}
+
+/* Hide delete buttons for non-admin users */
+body:not(.admin) .delete-message {
+    display: none;
+}
+
+/* Animation for message appearance */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Add styles for admin message controls */
+.message .admin-actions {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.message:hover .admin-actions {
+    opacity: 1;
+}
+
+.admin-actions button {
+    padding: 4px 8px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.admin-actions button:hover {
+    color: var(--status-error);
+}
+
+/* Ensure admin visibility */
+body.admin .admin-panel {
+    display: block;
+    opacity: 1;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal.show {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-content {
+    background: var(--bg-panel);
+    padding: 2rem;
+    border-radius: 24px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    width: 90%;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.modal.show .modal-content {
+    transform: translateY(0);
+}
+
+.modal-content h3 {
+    margin: 0 0 1.5rem 0;
+    color: var(--text-main);
+    font-size: 1.25rem;
+    font-weight: 500;
+    text-align: center;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.date-range {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.date-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.date-input label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.date-input input[type="date"] {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--bg-main);
+    color: var(--text-main);
+    font-size: 0.95rem;
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+.date-input input[type="date"]:focus {
+    outline: none;
+    border-color: var(--highlight);
+    box-shadow: 0 0 0 2px rgba(43, 136, 255, 0.1);
+}
+
+.date-input input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(var(--calendar-invert));
+    opacity: 0.7;
+    cursor: pointer;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.modal-buttons .admin-btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+    min-width: 120px;
+}
+
+/* Admin Panel */
+.admin-panel {
+    width: 420px;
+    background: var(--bg-panel);
+    border-radius: 24px;
+    padding: 24px;
+    display: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    margin-left: 16px;
+    opacity: 0;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.admin-panel.visible {
+    display: block;
+    opacity: 1;
+}
+
+.admin-panel h3 {
+    font-size: 1.25rem;
+    color: var(--text-main);
+    font-weight: 600;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--border-color);
+    text-align: center;
+    position: relative;
+}
+
+.admin-panel h3::before {
+    content: '⚙️';
+    margin-right: 8px;
+}
+
+.admin-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.admin-btn {
+    padding: 14px 20px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--button-bg) 0%, #4a5568 100%);
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.admin-btn:hover::before {
+    left: 100%;
+}
+
+.admin-btn:hover {
+    background: linear-gradient(135deg, var(--button-hover) 0%, #5a6578 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.admin-btn.danger {
+    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+}
+
+.admin-btn.danger:hover {
+    background: linear-gradient(135deg, #c53030 0%, #b91c1c 100%);
+    box-shadow: 0 4px 16px rgba(229, 62, 62, 0.3);
+}
+
+/* Chat Header and Theme Toggle */
+.chat-header {
+    padding: 20px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 70px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.chat-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--highlight);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    justify-content: center;
+}
+
+/* Theme Toggle */
+.theme-toggle {
+    position: absolute;
+    right: 20px;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+}
+
+.theme-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.theme-toggle .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #e9e9ea;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.theme-toggle .slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.theme-toggle input:checked + .slider {
+    background-color: var(--highlight);
+}
+
+.theme-toggle input:checked + .slider:before {
+    transform: translateX(16px);
+}
+
+/* Message spacing for delete buttons */
+.message.own .content {
+    margin-right: 40px;
+}
+
+.message.other .content {
+    margin-left: 40px;
+}
+
+/* Scrollbar styling */
+.messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.messages::-webkit-scrollbar-track {
+    background: var(--bg-panel);
+}
+
+.messages::-webkit-scrollbar-thumb {
+    background: var(--scroll-thumb);
+    border-radius: 3px;
+}
+
+.messages::-webkit-scrollbar-thumb:hover {
+    background: var(--scroll-thumb-hover);
+}
+
+/* Input and Message Box */
+.input-group {
+    padding: 16px;
+    background: var(--bg-panel);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    position: relative;
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+    border-top: 1px solid var(--border-color);
+}
+
+.input-group::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20px;
+    right: 20px;
+    height: 1px;
+    background: var(--border-color);
+}
+
+input {
+    padding: 12px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    font-size: 0.95rem;
+    background: var(--input-bg);
+    color: var(--text-main);
+    transition: all 0.2s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--highlight);
+    box-shadow: 0 0 0 2px rgba(43, 136, 255, 0.1);
+}
+
+input::placeholder {
+    color: var(--text-secondary);
+}
+
+#username {
+    width: 180px;
+    min-width: 120px;
+}
+
+#message {
+    flex: 1;
+}
+
+button {
+    padding: 10px 24px;
+    background: var(--button-bg);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+    background: var(--button-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+button:disabled {
+    background: var(--button-disabled);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Typing Status */
+.typing-status {
+    padding: 8px 20px;
+    color: var(--typing-text);
+    font-size: 0.9rem;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    max-width: 70%;
+}
+
+.typing-status:not(:empty) {
+    opacity: 1;
+    animation: fadeInUp 0.3s ease-out;
+}
+
+.typing-status::before {
+    content: "✍️";
+    margin-right: 8px;
+    font-size: 1rem;
+}

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PubNub Chat</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <div class="users-panel">
+            <h3>Online Users</h3>
+            <div id="users-list"></div>
+        </div>
+        <div class="chat-container">
+            <div class="chat-header">
+                <h2>💬 Chat Room</h2>
+                <label class="theme-toggle">
+                    <input type="checkbox" id="theme-toggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div id="connection-status" class="connection-status">Connecting...</div>
+            <div id="messages" class="messages"></div>
+            <div id="typing-status" class="typing-status"></div>
+            <div class="input-group">
+                <input type="text" id="username" placeholder="Your name..." autocomplete="off" />
+                <input type="text" id="message" placeholder="Type a message..." autocomplete="off" />
+                <button id="send-button">Send</button>
+            </div>
+        </div>
+        <div id="admin-panel" class="admin-panel">
+            <h3>Admin Controls</h3>
+            <div class="admin-controls">
+                <button class="admin-btn danger" id="clear-history">🗑️ Clear Chat History</button>
+                <button class="admin-btn" id="export-chat">📥 Export Chat</button>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
