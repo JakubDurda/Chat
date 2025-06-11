@@ -72,7 +72,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Emoji support by native Unicode
 - Modern UI inspired by contemporary chat applications 
 
-small changes xDDDDDD
-
-
-1234567
+1111
