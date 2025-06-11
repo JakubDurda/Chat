@@ -71,5 +71,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Built with [PubNub](https://www.pubnub.com/)
 - Emoji support by native Unicode
 - Modern UI inspired by contemporary chat applications 
-
-small change 
