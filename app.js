@@ -414,15 +414,7 @@ function sendMessage() {
             console.error('Failed to publish message:', status);
             return;
         }
-
-        const message = {
-            id: messageId,
-            text,
-            user: username,
-            time: new Date().toLocaleTimeString(),
-            timetoken: response.timetoken
-        };
-        handleNewMessage(message);
+        // Message will be handled by the PubNub message listener
     });
 }
 
@@ -668,12 +660,6 @@ messageInput.addEventListener('input', () => {
     clearTimeout(state.typingTimeout);
     publishTypingStatus(true);
     state.typingTimeout = setTimeout(() => publishTypingStatus(false), 1500);
-});
-
-// Form submission handling
-document.getElementById('message-form')?.addEventListener('submit', (e) => {
-    e.preventDefault(); // Prevent form submission
-    return false;
 });
 
 // Send button click handler
